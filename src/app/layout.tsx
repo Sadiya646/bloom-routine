@@ -1,10 +1,7 @@
 
 import type { Metadata } from "next";
 import "./globals.css";
-import { Geist } from "next/font/google";
-import { cn } from "@/lib/utils";
-
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+import { Toaster } from "react-hot-toast"; // Shob page-e toast show korar jonno
 
 export const metadata: Metadata = {
   title: "Bloom Routine | Your Little Productivity Space",
@@ -18,8 +15,32 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
-      <body>{children}</body>
+    <html lang="en">
+      <body>
+        {children}
+
+        {/* Toast-er position, color ebong animation setup */}
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 2500,
+            style: {
+              background: "#fffaff",
+              color: "#49365f",
+              border: "1px solid #eee5ff",
+              borderRadius: "16px",
+              padding: "14px 18px",
+              fontFamily: "Nunito, sans-serif",
+            },
+            success: {
+              iconTheme: {
+                primary: "#8b6bd6",
+                secondary: "#ffffff",
+              },
+            },
+          }}
+        />
+      </body>
     </html>
   );
 }
