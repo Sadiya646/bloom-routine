@@ -1,8 +1,8 @@
 
 "use client"; // Ei page-e user interaction thakbe
 
-import { useState } from "react"; // Task-er data manage korar jonno
-import Link from "next/link"; // Onno page-e jawar jonno
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   Plus,
   Clock3,
@@ -10,10 +10,10 @@ import {
   Check,
   ArrowLeft,
   CalendarDays,
-} from "lucide-react"; // UI icons
+} from "lucide-react";
 import toast from "react-hot-toast";
 
-// Prottekta routine task-er data-r structure
+// Prottekta routine task-er data structure
 type Task = {
   id: number;
   title: string;
@@ -24,7 +24,7 @@ type Task = {
   completed: boolean;
 };
 
-// Shurute kichu sample task dekhano hobe
+// Shurute dekhano sample task
 const initialTasks: Task[] = [
   {
     id: 1,
@@ -47,36 +47,70 @@ const initialTasks: Task[] = [
 ];
 
 export default function RoutinePage() {
-  // Task list ebong form-er input manage kora hocche
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  // Task list ebong form-er input manage korchi
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [title, setTitle] = useState("");
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("10:00");
   const [category, setCategory] = useState("Study");
   const [priority, setPriority] = useState("Medium");
 
-  // Notun task list-e add korar function
+  // LocalStorage theke data load hoyeche kina track korchi
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Browser-er LocalStorage theke saved task load korchi
+  useEffect(() => {
+    try {
+      const savedTasks = localStorage.getItem("bloom-routine-tasks");
+
+      if (savedTasks !== null) {
+        const parsedTasks: unknown = JSON.parse(savedTasks);
+
+        if (Array.isArray(parsedTasks)) {
+          // eslint-disable-next-line react-hooks/set-state-in-effect
+          setTasks(parsedTasks as Task[]);
+        } else {
+          setTasks(initialTasks);
+        }
+      } else {
+        setTasks(initialTasks);
+      }
+    } catch {
+      // Saved data read korte problem hole sample task dekhabo
+      setTasks(initialTasks);
+      toast.error("Saved routine load kora jayni!");
+    } finally {
+      setIsLoaded(true);
+    }
+  }, []);
+
+  // Task list change hole LocalStorage-e save korchi
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    try {
+      localStorage.setItem("bloom-routine-tasks", JSON.stringify(tasks));
+    } catch {
+      toast.error("Routine save kora jayni!");
+    }
+  }, [tasks, isLoaded]);
+
+  // Notun task add korar function
   function addTask() {
-   // Task-er naam na dile error toast dekhabe
-if (!title.trim()) {
-  toast.error("Please enter a task name! 🌸");
-  return;
-}
+    // Task-er naam na dile error toast dekhabe
+    if (!title.trim()) {
+      toast.error("Please enter a task name! 🌸");
+      return;
+    }
 
-// End time, start time-er pore na hole error dekhabe
-if (endTime <= startTime) {
-  toast.error("End time must be after start time! ⏰");
-  return;
-}
-
-    // Time validation: end time start time-er pore hote hobe
+    // End time, start time-er pore hote hobe
     if (endTime <= startTime) {
-      alert("End time must be after start time!");
+      toast.error("End time must be after start time! ⏰");
       return;
     }
 
     const newTask: Task = {
-      id: Date.now(), // Prottekta task-er unique ID
+      id: Date.now(),
       title: title.trim(),
       startTime,
       endTime,
@@ -85,14 +119,16 @@ if (endTime <= startTime) {
       completed: false,
     };
 
+    // Notun task add kore time onujayi sort korchi
     setTasks((previousTasks) =>
       [...previousTasks, newTask].sort((a, b) =>
         a.startTime.localeCompare(b.startTime)
       )
     );
+
     toast.success("Yay! Task added to your routine 🌷");
 
-    // Task add howar por form reset kora hocche
+    // Task add howar por form reset korchi
     setTitle("");
     setStartTime("09:00");
     setEndTime("10:00");
@@ -101,13 +137,10 @@ if (endTime <= startTime) {
   }
 
   // Task complete ba incomplete korar function
- 
-  // Task complete ba incomplete korar function
   function toggleTask(id: number) {
-    // Click kora task-ta khuje ber korchi
     const selectedTask = tasks.find((task) => task.id === id);
 
-    // Task age incomplete thakle complete howar toast dekhabe
+    // Incomplete task complete korle success toast dekhabe
     if (selectedTask && !selectedTask.completed) {
       toast.success("Great job! Task completed ✨");
     }
@@ -122,36 +155,29 @@ if (endTime <= startTime) {
     );
   }
 
+  // Task delete korar function
+  function deleteTask(id: number) {
+    setTasks((previousTasks) =>
+      previousTasks.filter((task) => task.id !== id)
+    );
 
-  // Task delete  function
- 
-function deleteTask(id: number) {
-  // Selected task list theke remove kora hocche
-  setTasks((previousTasks) =>
-    previousTasks.filter((task) => task.id !== id)
-  );
+    toast.success("Task deleted successfully! 🗑️");
+  }
 
-  // Task delete hole success toast dekhabe
-  toast.success("Task deleted successfully! 🗑️");
-}
-
-
-  // Koyta task complete hoyeche ta count
+  // Koyta task complete hoyeche count korchi
   const completedCount = tasks.filter(
     (task) => task.completed
   ).length;
 
-  // Daily progress percentage ber kora 
+  // Daily progress percentage ber korchi
   const progress =
     tasks.length === 0
       ? 0
       : Math.round((completedCount / tasks.length) * 100);
 
   return (
-    // Page-er main background
     <main className="min-h-screen bg-[#faf7ff] p-4 sm:p-8">
       <div className="mx-auto max-w-5xl">
-
         {/* Dashboard-e ferot jawar link */}
         <Link
           href="/"
@@ -161,7 +187,7 @@ function deleteTask(id: number) {
           Back to Dashboard
         </Link>
 
-        {/* Page title ebong short description */}
+        {/* Page title ebong description */}
         <header className="mb-8">
           <div className="mb-3 flex items-center gap-3">
             <div className="rounded-2xl bg-[#eee5ff] p-3 text-[#8062cf]">
@@ -196,7 +222,7 @@ function deleteTask(id: number) {
             </span>
           </div>
 
-          {/* Progress bar-er width percentage onujayi change hobe */}
+          {/* Progress percentage onujayi bar-er width change hobe */}
           <div className="h-3 overflow-hidden rounded-full bg-[#f0eafa]">
             <div
               className="h-full rounded-full bg-[#a78bfa] transition-all duration-300"
@@ -205,7 +231,7 @@ function deleteTask(id: number) {
           </div>
         </section>
 
-        {/* Notun routine task add korar form */}
+        {/* Notun task add korar form */}
         <section className="mb-6 rounded-3xl border border-[#eee7f6] bg-white p-5 sm:p-7">
           <h2 className="mb-5 flex items-center gap-2 text-xl font-extrabold text-[#49365f]">
             <Plus size={22} className="text-[#8062cf]" />
@@ -215,7 +241,7 @@ function deleteTask(id: number) {
           <form
             className="grid grid-cols-1 gap-4 sm:grid-cols-2"
             onSubmit={(event) => {
-              event.preventDefault(); // Form submit-e page reload bondho kore
+              event.preventDefault();
               addTask();
             }}
           >
@@ -343,8 +369,13 @@ function deleteTask(id: number) {
           </div>
 
           <div className="space-y-3">
-            {tasks.length === 0 ? (
-              // Task na thakle empty state show korbe
+            {!isLoaded ? (
+              // LocalStorage theke data load howa porjonto loading
+              <div className="rounded-2xl bg-[#faf7ff] px-4 py-10 text-center text-sm text-[#897e99]">
+                Loading your routine... 🌷
+              </div>
+            ) : tasks.length === 0 ? (
+              // Task na thakle empty state
               <div className="rounded-2xl bg-[#faf7ff] px-4 py-10 text-center">
                 <p className="text-3xl">🌱</p>
                 <p className="mt-2 font-bold text-[#68577c]">
@@ -378,7 +409,7 @@ function deleteTask(id: number) {
                     <Check size={16} />
                   </button>
 
-                  {/* Task-er title, time, category ebong priority */}
+                  {/* Task title, time, category ebong priority */}
                   <div className="min-w-0 flex-1">
                     <h3
                       className={`wrap-break-word text-sm font-extrabold ${
@@ -400,7 +431,7 @@ function deleteTask(id: number) {
                     </p>
                   </div>
 
-                  {/* Click korle task delete hoye jabe */}
+                  {/* Click korle task delete hobe */}
                   <button
                     type="button"
                     onClick={() => deleteTask(task.id)}
