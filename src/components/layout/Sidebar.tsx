@@ -42,6 +42,11 @@ const menuItems = [
     href: "/analytics",
     icon: ChartNoAxesCombined,
   },
+   {
+    name: "Mindful Moments",
+    href: "/mindful",
+    icon: Sparkles,
+  },
   {
     name: "Settings",
     href: "/settings",
@@ -89,7 +94,7 @@ export default function Sidebar() {
               href={item.href} 
               className={`flex items-center gap-3 rounded-2xl px-4 py-3 transition-all duration-200 ${
                 isActive
-                  ? "bg-[#eee5ff] font-extrabold text-[#7656bd]" // Active menu-এর রং
+                  ? "bg-[#eee5ff] font-extrabold text-[#7656bd]" 
                   : "font-semibold text-[#897e99] hover:bg-[#faf7ff] hover:text-[#7656bd]" 
               }`}
             >
@@ -107,7 +112,7 @@ export default function Sidebar() {
       </nav>
 
       <div className="mt-auto pt-8">
-        <div className="rounded-2xl bg-gradient-to-br from-[#f0e7ff] to-[#fce8f0] p-4">
+        <div className="rounded-2xl bg-linear-to-br from-[#f0e7ff] to-[#fce8f0] p-4">
           <div className="mb-3 flex items-center justify-between">
             <Sparkles size={22} className="text-[#8b69c8]" />
             <Heart size={18} className="text-[#d989ae]" />
