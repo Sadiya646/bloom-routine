@@ -22,38 +22,40 @@ type GardenItem = {
   emoji: string;
 };
 
+
 const musicTracks = [
   {
     title: "Gentle Rain",
     category: "Nature sounds",
     emoji: "🌧️",
-    src: "/public/audio/siarhei_korbut-after-the-rain-ended-617774.mp3",
+    src: "/audio/siarhei_korbut-after-the-rain-ended-617774.mp3",
   },
   {
     title: "Ocean Waves",
     category: "Nature sounds",
     emoji: "🌊",
-    src: "/public/audio/konstantinpazuzustudio-ocean-piano-waves-part-4-510370.mp3",
+    src: "/audio/konstantinpazuzustudio-ocean-piano-waves-part-4-510370.mp3",
   },
   {
     title: "Peaceful Forest",
     category: "Nature sounds",
     emoji: "🌿",
-    src: "/public/audio/konstantinpazuzustudio-forest-ambience-510368.mp3",
+    src: "/audio/leberch-peaceful-585609.mp3",
   },
   {
     title: "Soft Piano",
     category: "Instrumental",
     emoji: "🎹",
-    src: "/public/audio/konstantinpazuzustudio-soft-piano-510369.mp3",
+    src: "/audio/leberch-soft-piano-soft-piano-music-603947.mp3",
   },
   {
     title: "Calm Instrumental",
     category: "Instrumental",
     emoji: "🎶",
-    src: "/public/audio/konstantinpazuzustudio-calm-instrumental-510371.mp3",
+    src: "/audio/vibeschill-lo-fi-deep-sad-245363.mp3",
   },
 ];
+
 
 const gardenOptions = [
   { emoji: "🌸", label: "Flower" },
